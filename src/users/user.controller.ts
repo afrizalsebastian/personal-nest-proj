@@ -5,7 +5,11 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { Auth } from 'src/auth/auth.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateUserDTO, ResponseUserDTO } from 'src/model/user.model';
 import { WebResponse } from 'src/model/webresponse.model';
 import { UserService } from './user.service';
@@ -28,7 +32,9 @@ export class UserController {
 
   @Get()
   @HttpCode(200)
-  async testConnection(): Promise<Record<string, string>> {
+  @UseGuards(AuthGuard)
+  async testConnection(@Auth() user: User): Promise<Record<string, string>> {
+    console.log(user);
     return {
       messange: 'connection',
     };
