@@ -37,6 +37,7 @@ export class ProfileService {
 
   async update(user: User, request: UpdateProfileDTO) {
     this.logger.debug(`ProfileService.update ${user.username}`);
+
     const updateRequest = this.validationService.validate(
       ProfileValidation.UPDATE,
       request,

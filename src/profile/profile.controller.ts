@@ -35,7 +35,6 @@ export class ProfileController {
     @Auth() user: User,
     @Body() request: UpdateProfileDTO,
   ): Promise<WebResponse<ProfileResponse>> {
-    request.userId = user.id;
     const result = await this.profileService.update(user, request);
     return {
       data: result,

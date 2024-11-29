@@ -1,20 +1,26 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Auth } from 'src/auth/auth.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { CreateUserDTO, ResponseUserDTO } from 'src/model/user.model';
+import {
+  CreateUserDTO,
+  ResponseUserDTO,
+  UpdateUserDTO,
+} from 'src/model/user.model';
 import { WebResponse } from 'src/model/webresponse.model';
 import { UserService } from './user.service';
 
-@Controller('/api/users')
+@Controller('/api/user')
 export class UserController {
   constructor(private userService: UserService) {}
 
@@ -33,10 +39,38 @@ export class UserController {
   @Get()
   @HttpCode(200)
   @UseGuards(AuthGuard)
-  async testConnection(@Auth() user: User): Promise<Record<string, string>> {
-    console.log(user);
+  async get(@Auth() user: User): Promise<WebResponse<Record<string, string>>> {
     return {
-      messange: 'connection',
+      data: {
+        email: user.email,
+        username: user.username,
+      },
+      status: true,
+    };
+  }
+
+  @Put()
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async update(
+    @Auth() user: User,
+    @Body() request: UpdateUserDTO,
+  ): Promise<WebResponse<ResponseUserDTO>> {
+    const result = await this.userService.update(user, request);
+    return {
+      data: result,
+      status: true,
+    };
+  }
+
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthGuard)
+  async delete(@Auth() user: User): Promise<WebResponse<ResponseUserDTO>> {
+    const result = await this.userService.delete(user);
+    return {
+      data: result,
+      status: true,
     };
   }
 }

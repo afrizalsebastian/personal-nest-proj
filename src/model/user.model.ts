@@ -2,7 +2,7 @@ export interface ResponseUserDTO {
   id: number;
   username: string;
   email: string;
-  fullName: string;
+  fullName?: string;
   bio?: string;
 }
 
@@ -17,4 +17,9 @@ export interface CreateUserDTO {
 export interface LoginUserDTO {
   email: string; // Login pakai email
   password: string;
+}
+
+export interface UpdateUserDTO {
+  username?: string;
+  email?: string;
 }

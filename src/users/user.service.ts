@@ -8,6 +8,7 @@ import {
   CreateUserDTO,
   LoginUserDTO,
   ResponseUserDTO,
+  UpdateUserDTO,
 } from 'src/model/user.model';
 import { Logger } from 'winston';
 import { UserValidation } from './user.validation';
@@ -20,13 +21,13 @@ export class UserService {
     private readonly validationService: ValidationService,
   ) {}
 
-  private toResponseUser(user: User, profile: Profile): ResponseUserDTO {
+  private toResponseUser(user: User, profile: Profile = null): ResponseUserDTO {
     return {
       id: user.id,
       username: user.username,
       email: user.email,
-      fullName: profile.fullName,
-      bio: profile.bio,
+      fullName: profile?.fullName,
+      bio: profile?.bio,
     };
   }
 
@@ -62,15 +63,15 @@ export class UserService {
 
     const { user, profile } = await this.prismaService.$transaction(
       async (tx) => {
-        const user = await tx.user.create({
-          data: {
-            email: createRequest.email,
-            username: createRequest.username,
-            password: createRequest.password,
-          },
-        });
-
         try {
+          const user = await tx.user.create({
+            data: {
+              email: createRequest.email,
+              username: createRequest.username,
+              password: createRequest.password,
+            },
+          });
+
           const profile = await tx.profile.create({
             data: {
               fullName: createRequest.fullName,
@@ -118,5 +119,62 @@ export class UserService {
     }
 
     return this.toResponseUser(user, user.profile);
+  }
+
+  async update(user: User, request: UpdateUserDTO): Promise<ResponseUserDTO> {
+    this.logger.debug(`UserService.update ${user.username}`);
+
+    const updateRequest = this.validationService.validate(
+      UserValidation.UPDATE,
+      request,
+    );
+
+    if (updateRequest.username) {
+      const existingUserWithUsername = await this.prismaService.user.count({
+        where: {
+          username: updateRequest.username,
+        },
+      });
+
+      if (existingUserWithUsername != 0) {
+        throw new HttpException('Username already used', 400);
+      }
+    }
+
+    if (updateRequest.email) {
+      const existingUserWithEmail = await this.prismaService.user.count({
+        where: {
+          email: updateRequest.email,
+        },
+      });
+
+      if (existingUserWithEmail != 0) {
+        throw new HttpException('Email already used', 400);
+      }
+    }
+
+    const updated = await this.prismaService.user.update({
+      where: {
+        id: user.id,
+      },
+      data: updateRequest,
+    });
+
+    return this.toResponseUser(updated);
+  }
+
+  async delete(user: User): Promise<ResponseUserDTO> {
+    this.logger.debug(`UserService.delete ${user.username}`);
+
+    const result = await this.prismaService.user.delete({
+      where: {
+        id: user.id,
+      },
+      include: {
+        profile: true,
+      },
+    });
+
+    return this.toResponseUser(result, result.profile);
   }
 }

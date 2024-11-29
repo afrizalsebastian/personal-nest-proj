@@ -7,5 +7,4 @@ export interface ProfileResponse {
 export interface UpdateProfileDTO {
   fullName?: string;
   bio?: string;
-  userId: number;
 }
