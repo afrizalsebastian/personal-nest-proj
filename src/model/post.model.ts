@@ -14,6 +14,7 @@ export interface PostResponseWithPagingDTO {
 
 export interface DetailPostResponseDTO {
   id: number;
+  username: string;
   title: string;
   content: string;
   isPublished: boolean;

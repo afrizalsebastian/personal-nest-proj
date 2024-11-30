@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Post, User } from '@prisma/client';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'src/common/prisma.service';
@@ -35,7 +35,10 @@ export class PostService {
     };
   }
 
-  private toDetailPostResponseDto(post: Post): DetailPostResponseDTO {
+  private toDetailPostResponseDto(
+    post: Post,
+    username: string,
+  ): DetailPostResponseDTO {
     return {
       content: post.content,
       id: post.id,
@@ -44,6 +47,7 @@ export class PostService {
       publishedAt: post.publishedAt?.toLocaleString('en-US', {
         timeZone: 'Asia/Jakarta',
       }),
+      username,
     };
   }
 
@@ -102,5 +106,24 @@ export class PostService {
         ),
       ),
     };
+  }
+
+  async getById(user: User, postId: number): Promise<DetailPostResponseDTO> {
+    this.logger.debug(`PostService.create ${user.username}`);
+
+    const post = await this.prismaService.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!post) {
+      throw new HttpException('Post Not Found', 404);
+    }
+
+    return this.toDetailPostResponseDto(post, post.user.username);
   }
 }

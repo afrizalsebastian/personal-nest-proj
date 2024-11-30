@@ -4,6 +4,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
   Query,
   UseGuards,
@@ -13,6 +15,7 @@ import { Auth } from 'src/auth/auth.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import {
   CreatePostDTO,
+  DetailPostResponseDTO,
   PostResponseDTO,
   PostResponseWithPagingDTO,
 } from 'src/model/post.model';
@@ -47,6 +50,21 @@ export class PostController {
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
     const result = await this.postService.get(user, query);
+
+    return {
+      data: result,
+      status: true,
+    };
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async getById(
+    @Auth() user: User,
+    @Param('id', ParseIntPipe) postId: number,
+  ): Promise<WebResponse<DetailPostResponseDTO>> {
+    const result = await this.postService.getById(user, postId);
 
     return {
       data: result,
