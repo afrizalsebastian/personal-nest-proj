@@ -77,7 +77,7 @@ export class PostService {
     user: User,
     query: PostQueryExtract,
   ): Promise<PostResponseWithPagingDTO> {
-    this.logger.debug(`PostService.create ${user.username}`);
+    this.logger.debug(`PostService.get ${user.username}`);
 
     const skip = (query.page - 1) * query.rows;
     const result = await this.prismaService.post.findMany({
@@ -113,7 +113,7 @@ export class PostService {
     user: User,
     query: PostQueryExtract,
   ): Promise<PostResponseWithPagingDTO> {
-    this.logger.debug(`PostService.create ${user.username}`);
+    this.logger.debug(`PostService.getPostCurrentUser ${user.username}`);
 
     const skip = (query.page - 1) * query.rows;
     query.where['userId'] = user.id;
@@ -145,7 +145,7 @@ export class PostService {
   }
 
   async getById(user: User, postId: number): Promise<DetailPostResponseDTO> {
-    this.logger.debug(`PostService.create ${user.username}`);
+    this.logger.debug(`PostService.getById ${user.username}`);
 
     const post = await this.prismaService.post.findUnique({
       where: {
@@ -168,7 +168,7 @@ export class PostService {
     postId: number,
     request: UpdatePostDTO,
   ): Promise<DetailPostResponseDTO> {
-    this.logger.debug(`PostService.create ${user.username}`);
+    this.logger.debug(`PostService.update ${user.username}`);
 
     const existingPost = await this.prismaService.post.findUnique({
       where: {
@@ -204,5 +204,29 @@ export class PostService {
     });
 
     return this.toDetailPostResponseDto(updatedRequest, user.username);
+  }
+
+  async delete(user: User, postId: number): Promise<DetailPostResponseDTO> {
+    this.logger.debug(`PostService.delete ${user.username}`);
+
+    const existingPost =
+      (await this.prismaService.post.count({
+        where: {
+          userId: user.id,
+          id: postId,
+        },
+      })) > 0;
+    if (!existingPost) {
+      throw new HttpException('Post Not Found', 404);
+    }
+
+    const post = await this.prismaService.post.delete({
+      where: {
+        id: postId,
+        userId: user.id,
+      },
+    });
+
+    return this.toDetailPostResponseDto(post, user.username);
   }
 }

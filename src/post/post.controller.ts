@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -98,6 +99,21 @@ export class PostController {
     @Body() request: UpdatePostDTO,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
     const result = await this.postService.update(user, postId, request);
+
+    return {
+      data: result,
+      status: true,
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async delete(
+    @Auth() user: User,
+    @Param('id', ParseIntPipe) postId: number,
+  ): Promise<WebResponse<DetailPostResponseDTO>> {
+    const result = await this.postService.delete(user, postId);
 
     return {
       data: result,

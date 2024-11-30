@@ -64,7 +64,7 @@ export class UserController {
   }
 
   @Delete()
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async delete(@Auth() user: User): Promise<WebResponse<ResponseUserDTO>> {
     const result = await this.userService.delete(user);
