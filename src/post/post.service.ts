@@ -6,7 +6,9 @@ import { ValidationService } from 'src/common/validation.service';
 import {
   CreatePostDTO,
   DetailPostResponseDTO,
+  PostQueryExtract,
   PostResponseDTO,
+  PostResponseWithPagingDTO,
 } from 'src/model/post.model';
 import { Logger } from 'winston';
 import { PostValidation } from './post.validation';
@@ -19,11 +21,17 @@ export class PostService {
     private readonly validationService: ValidationService,
   ) {}
 
-  private toPostResponseDto(post: Post): PostResponseDTO {
+  private toPostResponseDto(
+    post: Post,
+    username: string = undefined,
+    publishedDate: string = undefined,
+  ): PostResponseDTO {
     return {
       content: post.content,
       id: post.id,
       title: post.title,
+      username,
+      publishedDate,
     };
   }
 
@@ -58,5 +66,41 @@ export class PostService {
     });
 
     return this.toPostResponseDto(result);
+  }
+
+  async get(
+    user: User,
+    query: PostQueryExtract = { page: 2, rows: 5 },
+  ): Promise<PostResponseWithPagingDTO> {
+    this.logger.debug(`PostService.create ${user.username}`);
+
+    const skip = (query.page - 1) * query.rows;
+    const result = await this.prismaService.post.findMany({
+      where: query.where,
+      skip,
+      take: query.rows,
+      orderBy: query.orderBy,
+      include: {
+        user: true,
+      },
+    });
+
+    const totalRecord = await this.prismaService.post.count({
+      where: query.where,
+      orderBy: query.orderBy,
+    });
+    const totalPage = Math.ceil(totalRecord / query.rows);
+
+    return {
+      page: query.page,
+      totalPage,
+      posts: result.map((it) =>
+        this.toPostResponseDto(
+          it,
+          it.user.username,
+          it.publishedAt?.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
+        ),
+      ),
+    };
   }
 }
