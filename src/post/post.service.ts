@@ -74,7 +74,7 @@ export class PostService {
 
   async get(
     user: User,
-    query: PostQueryExtract = { page: 2, rows: 5 },
+    query: PostQueryExtract,
   ): Promise<PostResponseWithPagingDTO> {
     this.logger.debug(`PostService.create ${user.username}`);
 
@@ -102,6 +102,41 @@ export class PostService {
         this.toPostResponseDto(
           it,
           it.user.username,
+          it.publishedAt?.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
+        ),
+      ),
+    };
+  }
+
+  async getPostCurrentUser(
+    user: User,
+    query: PostQueryExtract,
+  ): Promise<PostResponseWithPagingDTO> {
+    this.logger.debug(`PostService.create ${user.username}`);
+
+    const skip = (query.page - 1) * query.rows;
+    query.where['userId'] = user.id;
+
+    const result = await this.prismaService.post.findMany({
+      where: query.where,
+      skip,
+      take: query.rows,
+      orderBy: query.orderBy,
+    });
+
+    const totalRecord = await this.prismaService.post.count({
+      where: query.where,
+      orderBy: query.orderBy,
+    });
+    const totalPage = Math.ceil(totalRecord / query.rows);
+
+    return {
+      page: query.page,
+      totalPage,
+      posts: result.map((it) =>
+        this.toPostResponseDto(
+          it,
+          user.username,
           it.publishedAt?.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
         ),
       ),

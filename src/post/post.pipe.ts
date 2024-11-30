@@ -16,15 +16,13 @@ const validFilterKey = [
 @Injectable()
 export class QueryPostPipe implements PipeTransform {
   transform(value: any) {
-    if (!value) {
-      return null;
-    }
-
     let where = { AND: [] };
     let page = 1;
     const rows = 5;
     const orderBy = {};
-
+    if (!value) {
+      return { page, rows };
+    }
     for (const key in value) {
       if (value[key])
         if (key === 'page') {

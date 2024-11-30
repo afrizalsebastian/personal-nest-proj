@@ -57,6 +57,21 @@ export class PostController {
     };
   }
 
+  @Get('/my')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async getPostCurrentUser(
+    @Auth() user: User,
+    @Query(QueryPostPipe) query: any,
+  ): Promise<WebResponse<PostResponseWithPagingDTO>> {
+    const result = await this.postService.getPostCurrentUser(user, query);
+
+    return {
+      data: result,
+      status: true,
+    };
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
