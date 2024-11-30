@@ -33,3 +33,9 @@ export interface PostQueryExtract {
   where?: any;
   orderBy?: any;
 }
+
+export interface UpdatePostDTO {
+  title?: string;
+  content?: string;
+  isPublished?: boolean;
+}

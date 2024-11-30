@@ -9,6 +9,7 @@ import {
   PostQueryExtract,
   PostResponseDTO,
   PostResponseWithPagingDTO,
+  UpdatePostDTO,
 } from 'src/model/post.model';
 import { Logger } from 'winston';
 import { PostValidation } from './post.validation';
@@ -160,5 +161,48 @@ export class PostService {
     }
 
     return this.toDetailPostResponseDto(post, post.user.username);
+  }
+
+  async update(
+    user: User,
+    postId: number,
+    request: UpdatePostDTO,
+  ): Promise<DetailPostResponseDTO> {
+    this.logger.debug(`PostService.create ${user.username}`);
+
+    const existingPost = await this.prismaService.post.findUnique({
+      where: {
+        userId: user.id,
+        id: postId,
+      },
+    });
+    if (!existingPost) {
+      throw new HttpException('Post Not Found', 404);
+    }
+
+    const { title, content, isPublished } = this.validationService.validate(
+      PostValidation.UPDATE,
+      request,
+    );
+
+    const updatedRequest = await this.prismaService.post.update({
+      where: {
+        userId: user.id,
+        id: postId,
+      },
+      data: {
+        title,
+        content,
+        isPublished,
+        publishedAt:
+          !existingPost.isPublished && isPublished
+            ? new Date()
+            : existingPost.isPublished && isPublished === false
+              ? null
+              : existingPost.publishedAt,
+      },
+    });
+
+    return this.toDetailPostResponseDto(updatedRequest, user.username);
   }
 }

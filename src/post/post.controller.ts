@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import {
   DetailPostResponseDTO,
   PostResponseDTO,
   PostResponseWithPagingDTO,
+  UpdatePostDTO,
 } from 'src/model/post.model';
 import { WebResponse } from 'src/model/webresponse.model';
 import { QueryPostPipe } from 'src/post/post.pipe';
@@ -80,6 +82,22 @@ export class PostController {
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
     const result = await this.postService.getById(user, postId);
+
+    return {
+      data: result,
+      status: true,
+    };
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async update(
+    @Auth() user: User,
+    @Param('id', ParseIntPipe) postId: number,
+    @Body() request: UpdatePostDTO,
+  ): Promise<WebResponse<DetailPostResponseDTO>> {
+    const result = await this.postService.update(user, postId, request);
 
     return {
       data: result,
