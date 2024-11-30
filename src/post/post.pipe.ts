@@ -18,11 +18,9 @@ export class QueryPostPipe implements PipeTransform {
   transform(value: any) {
     let where = { AND: [] };
     let page = 1;
-    const rows = 5;
+    let rows = 5;
     const orderBy = {};
-    if (!value) {
-      return { page, rows };
-    }
+
     for (const key in value) {
       if (value[key])
         if (key === 'page') {
@@ -30,7 +28,7 @@ export class QueryPostPipe implements PipeTransform {
           if (isNaN(page))
             throw new HttpException('Query Page Parse Invalid', 400);
         } else if (key === 'rows') {
-          const rows = value.rows ? parseInt(value.rows) : 5;
+          rows = value.rows ? parseInt(value.rows) : 5;
           if (isNaN(rows))
             throw new HttpException('Query Rows Parse Invalid', 400);
         } else if (key === 'isPublished') {
@@ -54,6 +52,7 @@ export class QueryPostPipe implements PipeTransform {
       where,
       orderBy,
     };
+    console.log(result);
 
     return result;
   }
