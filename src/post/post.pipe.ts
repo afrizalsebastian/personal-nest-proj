@@ -52,7 +52,6 @@ export class QueryPostPipe implements PipeTransform {
       where,
       orderBy,
     };
-    console.log(result);
 
     return result;
   }
