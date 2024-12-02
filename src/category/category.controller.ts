@@ -33,7 +33,7 @@ export class CategoryController {
     @AuthAdmin() admin: User,
     @Body() request: CreateCategoryDTO,
   ): Promise<WebResponse<ResponseCategoryDTO>> {
-    const result = await this.categoryService.create(admin, request);
+    const result = await this.categoryService.create(request);
     return {
       data: result,
       status: true,
@@ -59,11 +59,7 @@ export class CategoryController {
     @Param('id', ParseIntPipe) categoryId: number,
     @Body() request: UpdateCategoryDTO,
   ): Promise<WebResponse<ResponseCategoryDTO>> {
-    const result = await this.categoryService.update(
-      admin,
-      categoryId,
-      request,
-    );
+    const result = await this.categoryService.update(categoryId, request);
     return {
       data: result,
       status: true,
@@ -77,7 +73,7 @@ export class CategoryController {
     @AuthAdmin() admin: User,
     @Param('id', ParseIntPipe) categoryId: number,
   ): Promise<WebResponse<ResponseCategoryDTO>> {
-    const result = await this.categoryService.delete(admin, categoryId);
+    const result = await this.categoryService.delete(categoryId);
     return {
       data: result,
       status: true,

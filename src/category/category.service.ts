@@ -1,5 +1,5 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { Category, User } from '@prisma/client';
+import { Category } from '@prisma/client';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
@@ -27,12 +27,7 @@ export class CategoryService {
     };
   }
 
-  async create(
-    admin: User,
-    request: CreateCategoryDTO,
-  ): Promise<ResponseCategoryDTO> {
-    this.logger.debug(`CategorySercvice.create ${admin.username}`);
-
+  async create(request: CreateCategoryDTO): Promise<ResponseCategoryDTO> {
     const createRequest = this.validationSercice.validate(
       CategoryValidation.CREATE,
       request,
@@ -65,12 +60,9 @@ export class CategoryService {
   }
 
   async update(
-    admin: User,
     categoryId: number,
     request: UpdateCategoryDTO,
   ): Promise<ResponseCategoryDTO> {
-    this.logger.debug(`CategorySercvice.update ${admin.username}`);
-
     const updateRequest = this.validationSercice.validate(
       CategoryValidation.UPDATE,
       request,
@@ -97,9 +89,7 @@ export class CategoryService {
     return this.toCategoryResponse(updatedCategory);
   }
 
-  async delete(admin: User, categoryId: number): Promise<ResponseCategoryDTO> {
-    this.logger.debug(`CategorySercvice.update ${admin.username}`);
-
+  async delete(categoryId: number): Promise<ResponseCategoryDTO> {
     const isCategoryExists =
       (await this.prismaService.category.count({
         where: {

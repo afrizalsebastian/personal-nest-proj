@@ -52,7 +52,7 @@ export class PostController {
     @AuthUser() user: User,
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
-    const result = await this.postService.get(user, query);
+    const result = await this.postService.get(query);
 
     return {
       data: result,
@@ -82,7 +82,7 @@ export class PostController {
     @AuthUser() user: User,
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
-    const result = await this.postService.getById(user, postId);
+    const result = await this.postService.getById(postId);
 
     return {
       data: result,

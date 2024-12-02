@@ -100,12 +100,7 @@ export class PostService {
     }
   }
 
-  async get(
-    user: User,
-    query: PostQueryExtract,
-  ): Promise<PostResponseWithPagingDTO> {
-    this.logger.debug(`PostService.get ${user.username}`);
-
+  async get(query: PostQueryExtract): Promise<PostResponseWithPagingDTO> {
     const skip = (query.page - 1) * query.rows;
     const result = await this.prismaService.post.findMany({
       where: query.where,
@@ -185,9 +180,7 @@ export class PostService {
     };
   }
 
-  async getById(user: User, postId: number): Promise<DetailPostResponseDTO> {
-    this.logger.debug(`PostService.getById ${user.username}`);
-
+  async getById(postId: number): Promise<DetailPostResponseDTO> {
     const post = await this.prismaService.post.findUnique({
       where: {
         id: postId,
