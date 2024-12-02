@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -52,6 +53,7 @@ export class CommentController {
     @Param('postId', ParseIntPipe) postId: number,
     @Query(QueryCommentPipe) query: CommentQueryExtract,
   ): Promise<WebResponse<ResponseCommentWithPagingDTO>> {
+    console.log(JSON.stringify(query));
     const result = await this.commentService.get(postId, query);
     return {
       data: result,
@@ -95,7 +97,7 @@ export class CommentController {
     };
   }
 
-  @Put(':commentId')
+  @Delete(':commentId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async delete(

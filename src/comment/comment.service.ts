@@ -70,7 +70,7 @@ export class CommentService {
       orderBy: query.orderBy,
     });
 
-    const totalRecord = await this.prismaService.post.count({
+    const totalRecord = await this.prismaService.comment.count({
       where: query.where,
       orderBy: query.orderBy,
     });
