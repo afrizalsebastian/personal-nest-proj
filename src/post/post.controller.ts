@@ -13,8 +13,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { AuthUser } from 'src/auth/auth.decorator';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Auth } from 'src/auth/auth.decorator';
+import { AuthUserGuard } from 'src/auth/auth.guard';
 import {
   CreatePostDTO,
   DetailPostResponseDTO,
@@ -32,9 +32,9 @@ export class PostController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async create(
-    @AuthUser() user: User,
+    @Auth() user: User,
     @Body() request: CreatePostDTO,
   ): Promise<WebResponse<PostResponseDTO>> {
     const result = await this.postService.create(user, request);
@@ -47,9 +47,8 @@ export class PostController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async get(
-    @AuthUser() user: User,
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
     const result = await this.postService.get(query);
@@ -62,9 +61,9 @@ export class PostController {
 
   @Get('/my')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async getPostCurrentUser(
-    @AuthUser() user: User,
+    @Auth() user: User,
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
     const result = await this.postService.getPostCurrentUser(user, query);
@@ -77,9 +76,8 @@ export class PostController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async getById(
-    @AuthUser() user: User,
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
     const result = await this.postService.getById(postId);
@@ -92,9 +90,9 @@ export class PostController {
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async update(
-    @AuthUser() user: User,
+    @Auth() user: User,
     @Param('id', ParseIntPipe) postId: number,
     @Body() request: UpdatePostDTO,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
@@ -108,9 +106,9 @@ export class PostController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async delete(
-    @AuthUser() user: User,
+    @Auth() user: User,
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
     const result = await this.postService.delete(user, postId);

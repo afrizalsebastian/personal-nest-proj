@@ -13,8 +13,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { AuthUser } from 'src/auth/auth.decorator';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Auth } from 'src/auth/auth.decorator';
+import { AuthUserGuard } from 'src/auth/auth.guard';
 import {
   CommentQueryExtract,
   CreateCommentDTO,
@@ -32,9 +32,9 @@ export class CommentController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async create(
-    @AuthUser() user: User,
+    @Auth() user: User,
     @Param('postId', ParseIntPipe) postId: number,
     @Body() request: CreateCommentDTO,
   ): Promise<WebResponse<ResponseCommentDTO>> {
@@ -47,9 +47,8 @@ export class CommentController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async get(
-    @AuthUser() user: User,
     @Param('postId', ParseIntPipe) postId: number,
     @Query(QueryCommentPipe) query: CommentQueryExtract,
   ): Promise<WebResponse<ResponseCommentWithPagingDTO>> {
@@ -63,9 +62,8 @@ export class CommentController {
 
   @Get(':commentId')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async getById(
-    @AuthUser() user: User,
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
   ): Promise<WebResponse<ResponseCommentDTO>> {
@@ -78,9 +76,9 @@ export class CommentController {
 
   @Put(':commentId')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async update(
-    @AuthUser() user: User,
+    @Auth() user: User,
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
     @Body() request: UpdateCommentDTO,
@@ -99,9 +97,9 @@ export class CommentController {
 
   @Delete(':commentId')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthUserGuard)
   async delete(
-    @AuthUser() user: User,
+    @Auth() user: User,
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
   ): Promise<WebResponse<ResponseCommentDTO>> {

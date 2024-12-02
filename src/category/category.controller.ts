@@ -11,9 +11,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { AuthAdmin } from 'src/auth/auth.decorator';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthAdminGuard, AuthGuard } from 'src/auth/auth.guard';
 import {
   CreateCategoryDTO,
   ResponseCategoryDTO,
@@ -28,9 +26,8 @@ export class CategoryController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthAdminGuard)
   async create(
-    @AuthAdmin() admin: User,
     @Body() request: CreateCategoryDTO,
   ): Promise<WebResponse<ResponseCategoryDTO>> {
     const result = await this.categoryService.create(request);
@@ -53,9 +50,8 @@ export class CategoryController {
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthAdminGuard)
   async update(
-    @AuthAdmin() admin: User,
     @Param('id', ParseIntPipe) categoryId: number,
     @Body() request: UpdateCategoryDTO,
   ): Promise<WebResponse<ResponseCategoryDTO>> {
@@ -68,9 +64,8 @@ export class CategoryController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthAdminGuard)
   async delete(
-    @AuthAdmin() admin: User,
     @Param('id', ParseIntPipe) categoryId: number,
   ): Promise<WebResponse<ResponseCategoryDTO>> {
     const result = await this.categoryService.delete(categoryId);
