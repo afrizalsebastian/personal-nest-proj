@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { Auth } from 'src/auth/auth.decorator';
+import { AuthUser } from 'src/auth/auth.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 import {
   CreatePostDTO,
@@ -34,7 +34,7 @@ export class PostController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard)
   async create(
-    @Auth() user: User,
+    @AuthUser() user: User,
     @Body() request: CreatePostDTO,
   ): Promise<WebResponse<PostResponseDTO>> {
     const result = await this.postService.create(user, request);
@@ -49,7 +49,7 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async get(
-    @Auth() user: User,
+    @AuthUser() user: User,
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
     const result = await this.postService.get(user, query);
@@ -64,7 +64,7 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async getPostCurrentUser(
-    @Auth() user: User,
+    @AuthUser() user: User,
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
     const result = await this.postService.getPostCurrentUser(user, query);
@@ -79,7 +79,7 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async getById(
-    @Auth() user: User,
+    @AuthUser() user: User,
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
     const result = await this.postService.getById(user, postId);
@@ -94,7 +94,7 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async update(
-    @Auth() user: User,
+    @AuthUser() user: User,
     @Param('id', ParseIntPipe) postId: number,
     @Body() request: UpdatePostDTO,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
@@ -110,7 +110,7 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async delete(
-    @Auth() user: User,
+    @AuthUser() user: User,
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
     const result = await this.postService.delete(user, postId);

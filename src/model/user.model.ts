@@ -1,7 +1,10 @@
+import { Role } from '@prisma/client';
+
 export interface ResponseUserDTO {
   id: number;
   username: string;
   email: string;
+  role: Role;
   fullName?: string;
   bio?: string;
 }

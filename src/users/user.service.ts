@@ -26,6 +26,7 @@ export class UserService {
       id: user.id,
       username: user.username,
       email: user.email,
+      role: user.role,
       fullName: profile?.fullName,
       bio: profile?.bio,
     };

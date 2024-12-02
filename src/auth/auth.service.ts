@@ -13,7 +13,12 @@ export class AuthService {
 
   async login(request: LoginUserDTO): Promise<AuthResponse> {
     const user = await this.userService.getByUsername(request);
-    const payload = { id: user.id, username: user.username, email: user.email };
+    const payload = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    };
     const token = await this.jwtService.signAsync(payload);
     return { token };
   }
