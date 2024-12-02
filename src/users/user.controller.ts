@@ -16,8 +16,8 @@ import {
   CreateUserDTO,
   ResponseUserDTO,
   UpdateUserDTO,
-} from 'src/model/user.model';
-import { WebResponse } from 'src/model/webresponse.model';
+} from 'src/dtos/user.dto';
+import { WebResponse } from 'src/dtos/webresponse.dto';
 import { UserService } from './user.service';
 
 @Controller('/api/user')

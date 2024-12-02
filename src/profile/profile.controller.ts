@@ -9,8 +9,8 @@ import {
 import { User } from '@prisma/client';
 import { Auth } from 'src/auth/auth.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { ProfileResponse, UpdateProfileDTO } from 'src/model/profile.model';
-import { WebResponse } from 'src/model/webresponse.model';
+import { ProfileResponse, UpdateProfileDTO } from 'src/dtos/profile.dto';
+import { WebResponse } from 'src/dtos/webresponse.dto';
 import { ProfileService } from './profile.service';
 
 @Controller('/api/profile')

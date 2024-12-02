@@ -10,7 +10,7 @@ import {
   PostResponseDTO,
   PostResponseWithPagingDTO,
   UpdatePostDTO,
-} from 'src/model/post.model';
+} from 'src/dtos/post.dto';
 import { Logger } from 'winston';
 import { PostValidation } from './post.validation';
 

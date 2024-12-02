@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { HttpException, Injectable, PipeTransform } from '@nestjs/common';
-import { PostQueryExtract } from 'src/model/post.model';
+import { PostQueryExtract } from 'src/dtos/post.dto';
 
 const validUserKey = ['username', 'email'];
 const validSortKey = ['id', 'createdAt'];

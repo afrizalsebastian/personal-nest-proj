@@ -21,8 +21,8 @@ import {
   PostResponseDTO,
   PostResponseWithPagingDTO,
   UpdatePostDTO,
-} from 'src/model/post.model';
-import { WebResponse } from 'src/model/webresponse.model';
+} from 'src/dtos/post.dto';
+import { WebResponse } from 'src/dtos/webresponse.dto';
 import { QueryPostPipe } from 'src/post/post.pipe';
 import { PostService } from './post.service';
 

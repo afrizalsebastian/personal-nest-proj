@@ -9,7 +9,7 @@ import {
   LoginUserDTO,
   ResponseUserDTO,
   UpdateUserDTO,
-} from 'src/model/user.model';
+} from 'src/dtos/user.dto';
 import { Logger } from 'winston';
 import { UserValidation } from './user.validation';
 

@@ -3,7 +3,7 @@ import { Profile, User } from '@prisma/client';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
-import { ProfileResponse, UpdateProfileDTO } from 'src/model/profile.model';
+import { ProfileResponse, UpdateProfileDTO } from 'src/dtos/profile.dto';
 import { Logger } from 'winston';
 import { ProfileValidation } from './profile.validation';
 
