@@ -1,3 +1,4 @@
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -11,6 +12,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Auth } from 'src/auth/auth.decorator';
@@ -77,6 +79,7 @@ export class PostController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthUserGuard)
+  @UseInterceptors(CacheInterceptor)
   async getById(
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
