@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_KYE,
+        secret: process.env.JWT_KEY,
       });
 
       request['user'] = payload;
@@ -67,7 +67,7 @@ export class AuthUserGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_KYE,
+        secret: process.env.JWT_KEY,
       });
 
       if (payload.role === Role.USER) {
@@ -108,7 +108,7 @@ export class AuthAdminGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_KYE,
+        secret: process.env.JWT_KEY,
       });
 
       if (payload.role === Role.ADMIN) {

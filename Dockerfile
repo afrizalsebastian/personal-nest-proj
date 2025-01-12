@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20.18-alpine
 RUN apk add --no-cache python3 make gcc g++ openssl
 
 WORKDIR /app
@@ -20,5 +20,5 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8080
-CMD ['/usr/local/bin/docker-entrypoint.sh']
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
 
