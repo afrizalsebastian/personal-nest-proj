@@ -5,6 +5,7 @@ import { Cache } from 'cache-manager';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
+import { TTL } from 'src/constants/cache';
 import {
   CreatePostDTO,
   DetailPostResponseDTO,
@@ -103,7 +104,16 @@ export class PostService {
     }
   }
 
-  async get(query: PostQueryExtract): Promise<PostResponseWithPagingDTO> {
+  async get(
+    query: PostQueryExtract,
+    cacheKey: string = '',
+    isCache: boolean = false,
+  ): Promise<PostResponseWithPagingDTO> {
+    const valueCache = await this.cacheManager.get(cacheKey);
+    if (isCache && valueCache) {
+      return JSON.parse(valueCache.toString());
+    }
+
     const skip = (query.page - 1) * query.rows;
     const result = await this.prismaService.post.findMany({
       where: query.where,
@@ -126,7 +136,7 @@ export class PostService {
     });
     const totalPage = Math.ceil(totalRecord / query.rows);
 
-    return {
+    const resultPosts = {
       page: query.page,
       totalPage,
       posts: result.map((it) =>
@@ -138,13 +148,26 @@ export class PostService {
         ),
       ),
     };
+
+    if (isCache) {
+      await this.cacheManager.set(cacheKey, JSON.stringify(resultPosts), TTL);
+    }
+
+    return resultPosts;
   }
 
   async getPostCurrentUser(
     user: User,
     query: PostQueryExtract,
+    cacheKey: string = '',
+    isCache: boolean = false,
   ): Promise<PostResponseWithPagingDTO> {
     this.logger.debug(`PostService.getPostCurrentUser ${user.username}`);
+
+    const valueCache = await this.cacheManager.get(cacheKey);
+    if (isCache && valueCache) {
+      return JSON.parse(valueCache.toString());
+    }
 
     const skip = (query.page - 1) * query.rows;
     query.where['userId'] = user.id;
@@ -169,7 +192,7 @@ export class PostService {
     });
     const totalPage = Math.ceil(totalRecord / query.rows);
 
-    return {
+    const resultPosts = {
       page: query.page,
       totalPage,
       posts: result.map((it) =>
@@ -181,9 +204,24 @@ export class PostService {
         ),
       ),
     };
+
+    if (isCache) {
+      await this.cacheManager.set(cacheKey, JSON.stringify(resultPosts), TTL);
+    }
+
+    return resultPosts;
   }
 
-  async getById(postId: number): Promise<DetailPostResponseDTO> {
+  async getById(
+    postId: number,
+    cacheKey: string = '',
+    isCache: boolean = false,
+  ): Promise<DetailPostResponseDTO> {
+    const valueCache = await this.cacheManager.get(cacheKey);
+    if (isCache && valueCache) {
+      return JSON.parse(valueCache.toString());
+    }
+
     const post = await this.prismaService.post.findUnique({
       where: {
         id: postId,
@@ -202,11 +240,16 @@ export class PostService {
       throw new HttpException('Post Not Found', 404);
     }
 
-    return this.toDetailPostResponseDto(
+    const result = this.toDetailPostResponseDto(
       post,
       post.user.username,
       post.categories.map((it) => it.Category),
     );
+
+    if (isCache && post) {
+      await this.cacheManager.set(cacheKey, JSON.stringify(result), TTL);
+    }
+    return result;
   }
 
   async update(

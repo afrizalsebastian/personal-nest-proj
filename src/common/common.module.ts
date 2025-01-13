@@ -1,13 +1,10 @@
-import {
-  CacheInterceptor,
-  CacheModule,
-  CacheStore,
-} from '@nestjs/cache-manager';
+import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 import { redisStore } from 'cache-manager-redis-yet';
 import { WinstonModule } from 'nest-winston';
+import { TTL } from 'src/constants/cache';
 import * as winston from 'winston';
 import { ErrorFilter } from './error.filter';
 import { PrismaService } from './prisma.service';
@@ -34,12 +31,12 @@ import { ValidationService } from './validation.service';
           username: process.env.REDIS_USERNAME,
           password: process.env.REDIS_PASSWORD,
           database: 0,
-          ttl: 60 * 60000,
+          ttl: TTL,
         });
 
         return {
           store: store as unknown as CacheStore,
-          ttl: 60 * 60000,
+          ttl: TTL,
         };
       },
     }),
@@ -50,10 +47,6 @@ import { ValidationService } from './validation.service';
     {
       provide: APP_FILTER,
       useClass: ErrorFilter,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
     },
   ],
   exports: [PrismaService, ValidationService],

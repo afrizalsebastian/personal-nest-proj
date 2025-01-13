@@ -1,4 +1,3 @@
-import { CacheInterceptor } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -11,10 +10,11 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { Request } from 'express';
 import { Auth } from 'src/auth/auth.decorator';
 import { AuthUserGuard } from 'src/auth/auth.guard';
 import {
@@ -51,9 +51,11 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthUserGuard)
   async get(
+    @Req() req: Request,
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
-    const result = await this.postService.get(query);
+    const cacheKey = req.url;
+    const result = await this.postService.get(query, cacheKey, true);
 
     return {
       data: result,
@@ -65,10 +67,17 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthUserGuard)
   async getPostCurrentUser(
+    @Req() req: Request,
     @Auth() user: User,
     @Query(QueryPostPipe) query: any,
   ): Promise<WebResponse<PostResponseWithPagingDTO>> {
-    const result = await this.postService.getPostCurrentUser(user, query);
+    const cacheKey = `${req.url}--${user.id}`;
+    const result = await this.postService.getPostCurrentUser(
+      user,
+      query,
+      cacheKey,
+      true,
+    );
 
     return {
       data: result,
@@ -79,11 +88,12 @@ export class PostController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthUserGuard)
-  @UseInterceptors(CacheInterceptor)
   async getById(
+    @Req() req: Request,
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<WebResponse<DetailPostResponseDTO>> {
-    const result = await this.postService.getById(postId);
+    const cahceKey = req.url;
+    const result = await this.postService.getById(postId, cahceKey, true);
 
     return {
       data: result,
