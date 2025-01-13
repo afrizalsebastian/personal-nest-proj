@@ -1,13 +1,12 @@
 FROM node:20.18-alpine
-RUN apk add --no-cache python3 make gcc g++ openssl
+RUN apk add --no-cache openssl bash
 
 WORKDIR /app
 
 COPY package.json yarn.lock  ./
 
 RUN npm install -g @nestjs/cli && \
-    yarn install && \
-    npm rebuild bcrypt --build-from-source
+    yarn
 
 COPY . .
 

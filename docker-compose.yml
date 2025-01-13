@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   database:
     image: mysql
@@ -18,6 +16,21 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - app_net
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   app:
     build: .
     restart: on-failure
@@ -26,6 +39,8 @@ services:
       - 8080:8080
     depends_on:
       database:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     env_file:
       - .env

@@ -28,7 +28,7 @@ import { ValidationService } from './validation.service';
       useFactory: async () => {
         const store = await redisStore({
           socket: {
-            host: 'localhost',
+            host: process.env.REDIS_HOST,
             port: 6379,
           },
           username: process.env.REDIS_USERNAME,
